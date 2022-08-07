@@ -20,7 +20,7 @@ app.get('/search', async (req, res) => {
     var options = [];
     if (typeof results[1] != 'string') {
         options = results[1].map(function (value, index) {
-            return { name: value, link: results[3][index] }
+            return { title: value, link: results[3][index] }
         });
     }
     res.send(options);
@@ -40,7 +40,6 @@ app.get('/random', async (req, res) => {
 app.get('/related', async (req, res) => {
     var url = req.query.url.replace('https://pt.wikipedia.org/wiki/', '');
     url = url.replace('/wiki/', '');
-
     console.log(encodeURI(url));
     try {
         var response = await axios.get('https://pt.wikipedia.org/wiki/' + encodeURI(url));
