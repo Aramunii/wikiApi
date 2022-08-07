@@ -12,7 +12,23 @@ app.use(
 );
 app.options('*', cors());
 
-app.get('/', async (req, res) => {
+app.get('/search', async (req, res) => {
+
+    search = encodeURI(req.query.q);
+    var response = await axios.get(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${search}&limit=20`);
+    results = response.data;
+    var options = results[1].map(function (value, index) {
+        return { name: value, link: results[3][index] }
+    });
+    res.send(options);
+});
+
+app.listen(process.env.PORT || 3000, function () {
+    console.log('server running on port 3000', '');
+});
+
+
+async function getRelated(url) {
     var response = await axios.get('https://pt.wikipedia.org/wiki/J%C3%B4_Soares');
     var $ = cheerio.load(response.data);
     var Links = $('#content').find('a').toArray().map(element => {
@@ -25,16 +41,11 @@ app.get('/', async (req, res) => {
         }
     })
 
-    Links = Links.filter(element=>{
-        if(element)
-        {
+    Links = Links.filter(element => {
+        if (element) {
             return element;
         }
     });
 
-    res.send(Links)
-});
-
-app.listen(process.env.PORT || 3000, function () {
-    console.log('server running on port 3000', '');
-});
+    return Links;
+}
