@@ -17,9 +17,12 @@ app.get('/search', async (req, res) => {
     search = encodeURI(req.query.q);
     var response = await axios.get(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${search}&limit=20`);
     results = response.data;
-    var options = results[1].map(function (value, index) {
-        return { name: value, link: results[3][index] }
-    });
+    var options = [];
+    if (typeof results[1] != 'string') {
+        options = results[1].map(function (value, index) {
+            return { name: value, link: results[3][index] }
+        });
+    }
     res.send(options);
 });
 
