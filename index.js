@@ -38,9 +38,12 @@ app.get('/random', async (req, res) => {
 })
 
 app.get('/related', async (req, res) => {
-    var url = req.query.url.replace('https://pt.wikipedia.org', '');
+    var url = req.query.url.replace('https://pt.wikipedia.org/wiki/', '');
+    url = url.replace('/wiki/', '');
+
+    console.log(encodeURI(url));
     try {
-        var response = await axios.get('https://pt.wikipedia.org' + url);
+        var response = await axios.get('https://pt.wikipedia.org/wiki/' + encodeURI(url));
         var $ = cheerio.load(response.data);
         var Links = $('#content').find('a').toArray().map(element => {
             var href = $(element).attr('href');
@@ -52,18 +55,18 @@ app.get('/related', async (req, res) => {
                 }
             }
         })
-    
+
         Links = Links.filter(element => {
             if (element) {
                 return element;
             }
         });
         res.send(Links);
-    
+
     } catch (error) {
         res.send(error);
     }
-    
+
 })
 
 app.listen(process.env.PORT || 3000, function () {
