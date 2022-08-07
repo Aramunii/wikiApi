@@ -15,7 +15,7 @@ app.options('*', cors());
 app.get('/search', async (req, res) => {
 
     search = encodeURI(req.query.q);
-    var response = await axios.get(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${search}&limit=20`);
+    var response = await axios.get(`https://pt.wikipedia.org/w/api.php?action=opensearch&search=${search}&limit=20`);
     results = response.data;
     var options = [];
     if (typeof results[1] != 'string') {
@@ -37,18 +37,15 @@ app.get('/random', async (req, res) => {
     res.send({ title: title, link: link, resume: resume });
 })
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log('server running on port 3000', '');
-});
-
-
-async function getRelated(url) {
-    var response = await axios.get('https://pt.wikipedia.org/wiki/J%C3%B4_Soares');
+app.get('/related', async (req, res) => {
+    var url = req.query.url.replace('https://pt.wikipedia.org', '');
+    var response = await axios.get('https://pt.wikipedia.org' + url);
     var $ = cheerio.load(response.data);
     var Links = $('#content').find('a').toArray().map(element => {
         var href = $(element).attr('href');
         if (!$(element).hasClass('external') && href && href.indexOf('/wiki') == 0) {
             var title = $(element).text();
+            console.log(title);
             if (title) {
                 return { title: title, link: href };
             }
@@ -61,5 +58,13 @@ async function getRelated(url) {
         }
     });
 
-    return Links;
+    res.send(Links);
+})
+
+app.listen(process.env.PORT || 3000, function () {
+    console.log('server running on port 3000', '');
+});
+
+async function getRelated(url) {
+
 }
