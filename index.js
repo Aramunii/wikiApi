@@ -23,6 +23,17 @@ app.get('/search', async (req, res) => {
     res.send(options);
 });
 
+
+app.get('/random', async (req, res) => {
+    var response = await axios.get('https://pt.wikipedia.org/wiki/Especial:Aleat%C3%B3ria');
+    var $ = cheerio.load(response.data);
+    var title = $('#firstHeading').text();
+    var link = $('#ca-nstab-main').find('a').attr('href');
+    var resume = $($('#mw-content-text').find('p')[0]).text()
+
+    res.send({ title: title, link: link, resume: resume });
+})
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('server running on port 3000', '');
 });
