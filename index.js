@@ -60,7 +60,7 @@ app.get('/related', async (req, res) => {
                 return element;
             }
         });
-        var html = $('.mw-parser-output').html()
+        var html = $('#content').html()
         Links.push({ html: html })
         res.send(Links);
     } catch (error) {
